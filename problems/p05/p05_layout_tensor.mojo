@@ -25,8 +25,7 @@ fn broadcast_add[
 ):
     row = thread_idx.y
     col = thread_idx.x
-    # FILL ME IN (roughly 2 lines)
-
+    out[row, col] = a[row] + b[col]
 
 # ANCHOR_END: broadcast_add_layout_tensor
 def main():
