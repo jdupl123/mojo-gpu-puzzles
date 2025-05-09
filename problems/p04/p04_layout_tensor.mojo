@@ -18,7 +18,7 @@ fn add_10_2d(
 ):
     row = thread_idx.y
     col = thread_idx.x
-    out[col, row] = a[col, row] + 10
+    out[row, col] = a[row, col] + 10
 
 # ANCHOR_END: add_10_2d_layout_tensor
 
