@@ -69,7 +69,7 @@ fn conv_1d_block_boundary[
     if local_i<TPB: data[local_i] = a[global_i]
     if local_i<CONV_2: kernel[local_i] = b[global_i]
     if local_i==TPB-1:
-        for j in range(CONV_2-1):
+        for j in range(j,CONV_2):
             if global_i + j < SIZE_2:
                 data[local_i+j] = a[global_i+j]
     barrier()
