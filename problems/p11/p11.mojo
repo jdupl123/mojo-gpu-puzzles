@@ -30,10 +30,11 @@ fn conv_1d_simple[
     data = tb[dtype]().row_major[SIZE]().shared().alloc()
     kernel = tb[dtype]().row_major[CONV]().shared().alloc()
     if local_i<SIZE: data[local_i] = a[local_i]
-    if local_i<CONV: kernel[local_i] = kernel[local_i]
+    if local_i<CONV: kernel[local_i] = b[local_i]
     barrier()
     
     # out = sum_j(a[i+j] * b[j])
+    @parameter
     tmp = data[local_i+0] * kernel[0]
     for j in range(1,CONV):
         if local_i + j < SIZE: 
