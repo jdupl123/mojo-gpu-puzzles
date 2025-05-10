@@ -77,8 +77,8 @@ fn conv_1d_block_boundary[
     # out = sum_j(a[i+j] * b[j])
     @parameter
     tmp = data[local_i+0] * kernel[0]
-    for j in range(1,CONV):
-        if local_i + j < SIZE: 
+    for j in range(1,CONV_2):
+        if local_i + j < SIZE_2: 
             tmp += data[local_i+j] * kernel[j]
     out[local_i]=tmp
 
