@@ -80,7 +80,7 @@ fn conv_1d_block_boundary[
     for j in range(1,CONV_2):
         if local_i + j < SIZE_2: 
             tmp += data[local_i+j] * kernel[j]
-    out[local_i]=tmp
+    out[global_i]=tmp
 
 # ANCHOR_END: conv_1d_block_boundary
 
