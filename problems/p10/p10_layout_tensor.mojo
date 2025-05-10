@@ -30,9 +30,14 @@ fn dot_product[
     i=thread_idx.x
     shared[i] = a[i] * b[i]
     barrier()
+    # LOG(n) reduce
+    stride = size //2
+    while stride > i:
+        shared[i] += shared[i+stride]
+        stride /= 2
+        barrier()
     if i == 0:
-        for j in range(size):
-            out[0] += shared[j] 
+        out[0] += shared[i] 
 # ANCHOR_END: dot_product_layout_tensor
 
 
