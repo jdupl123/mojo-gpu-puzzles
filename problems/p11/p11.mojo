@@ -26,7 +26,21 @@ fn conv_1d_simple[
 ):
     global_i = block_dim.x * block_idx.x + thread_idx.x
     local_i = thread_idx.x
-    # FILL ME IN (roughly 14 lines)
+    if global_i >= SIZE: return
+    data = tb[dtype]().row_major[SIZE]().shared().alloc()
+    kernel = tb[dtype]().row_major[CONV]().shared().alloc()
+    if local_i<SIZE: data[local_i] = a[local_i]
+    if local_i<CONV: kernel[local_i] = kernel[local_i]
+    barrier()
+    
+    # out = sum_j(a[i+j] * b[j])
+    tmp = data[local_i+0] * kernel[0]
+    for j in range(1,CONV):
+        if local_i + j < SIZE: 
+            tmp += data[local_i+j] * kernel[j]
+    out[local_i]=tmp
+
+
 
 # ANCHOR_END: conv_1d_simple
 
