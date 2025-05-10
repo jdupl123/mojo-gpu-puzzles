@@ -28,7 +28,7 @@ fn dot_product[
     ...
     shared = tb[dtype]().row_major[TPB]().shared().alloc()
     i=thread_idx.x
-    shared[i] = a[i] + b[i]
+    shared[i] = a[i] * b[i]
     barrier()
     if i == 0:
         for j in range(size):
