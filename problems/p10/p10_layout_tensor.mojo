@@ -26,8 +26,13 @@ fn dot_product[
 ):
     # FILL ME IN (roughly 13 lines)
     ...
-
-
+    shared = tb[dtype]().row_major[TPB]().shared().alloc()
+    i=thread_idx.x
+    shared[i] = a[i] + b[i]
+    barrier()
+    if i == 0:
+        for j in range(size):
+            out[0] += shared[j] 
 # ANCHOR_END: dot_product_layout_tensor
 
 
