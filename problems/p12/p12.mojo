@@ -77,7 +77,7 @@ fn prefix_sum_block_sum_phase[layout: Layout](
 ):
     global_i = block_dim.x * block_idx.x + thread_idx.x
     for i in range(block_dim.x):
-        if global_i < i * block_dim.x: return
+        if global_i < i * block_dim.x or i == 0: return
         prev_sum = out[i * block_idx.x - 1]
         out[global_i] += prev_sum 
 
