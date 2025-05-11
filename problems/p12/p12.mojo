@@ -35,6 +35,7 @@ fn prefix_sum_simple[
             s[i+stride] += s[i]
         stride*=2 
         barrier()
+    out[i] = s[i]
 
 
 
