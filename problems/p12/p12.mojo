@@ -30,7 +30,7 @@ fn prefix_sum_simple[
     s[i] = a[i]
     barrier()
     stride = 1
-    while stride < TPB//2:
+    while stride <= TPB//2:
         if i+stride<TPB:
             s[i+stride] += s[i]
         stride*=2 
