@@ -75,6 +75,7 @@ fn prefix_sum_block_sum_phase[layout: Layout](
     out: LayoutTensor[mut=False, dtype, layout],
     size: Int
 ):
+    return
     global_i = block_dim.x * block_idx.x + thread_idx.x
     for i in range(block_dim.x):
         prev_sum = out[i * block_idx.x - 1]
