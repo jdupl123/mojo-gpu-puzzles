@@ -48,8 +48,7 @@ fn conv_1d_simple[
 # ANCHOR: conv_1d_block_boundary
 alias SIZE_2 = 15
 alias CONV_2 = 4
-alias BLKS = 2
-alias BLOCKS_PER_GRID_2 = (BLKS, 1)
+alias BLOCKS_PER_GRID_2 = (2, 1)
 alias THREADS_PER_BLOCK_2 = (TPB, 1)
 
 
@@ -67,7 +66,7 @@ fn conv_1d_block_boundary[
     kernel = tb[dtype]().row_major[CONV_2]().shared().alloc()
 
     if local_i<TPB: data[local_i] = a[global_i]
-    if local_i<CONV_2: kernel[local_i] = b[global_i]
+    if local_i<CONV_2: kernel[local_i] = b[local_i]
     if local_i==TPB-1:
         for j in range(1,CONV_2):
             if global_i + j < SIZE_2:
@@ -76,10 +75,9 @@ fn conv_1d_block_boundary[
     
     # out = sum_j(a[i+j] * b[j])
     @parameter
-    tmp = data[local_i+0] * kernel[0]
+    tmp = data[local_i] * kernel[0]
     for j in range(1,CONV_2):
-        if local_i + j < SIZE_2: 
-            tmp += data[local_i+j] * kernel[j]
+        tmp += data[local_i+j] * kernel[j]
     out[global_i]=tmp
 
 # ANCHOR_END: conv_1d_block_boundary
