@@ -68,7 +68,7 @@ fn prefix_sum_local_phase[out_layout: Layout, in_layout: Layout](
             s[i+stride] += s[i]
         stride*=2 
         barrier()
-    out[i] = s[i]
+    out[global_i] = s[i]
 
 # Kernel 2: Add block sums to their respective blocks
 fn prefix_sum_block_sum_phase[layout: Layout](
