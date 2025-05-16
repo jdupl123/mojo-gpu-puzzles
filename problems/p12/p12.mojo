@@ -39,6 +39,7 @@ fn prefix_sum_simple[
 
 
 
+
 # ANCHOR_END: prefix_sum_simple
 
 # ANCHOR: prefix_sum_complete
@@ -50,11 +51,13 @@ alias extended_layout = Layout.row_major(EXTENDED_SIZE)
 
 
 # Kernel 1: Compute local prefix sums and store block sums in out
-fn prefix_sum_local_phase[out_layout: Layout, in_layout: Layout](
+fn prefix_sum_local_phase[
+    out_layout: Layout, in_layout: Layout
+](
     out: LayoutTensor[mut=False, dtype, out_layout],
     a: LayoutTensor[mut=False, dtype, in_layout],
     size: Int,
-    num_blocks: Int
+    num_blocks: Int,
 ):
     global_i = block_dim.x * block_idx.x + thread_idx.x
     local_i = thread_idx.x
@@ -70,16 +73,17 @@ fn prefix_sum_local_phase[out_layout: Layout, in_layout: Layout](
         barrier()
     out[global_i] = s[i]
 
+
 # Kernel 2: Add block sums to their respective blocks
-fn prefix_sum_block_sum_phase[layout: Layout](
-    out: LayoutTensor[mut=False, dtype, layout],
-    size: Int
-):
+fn prefix_sum_block_sum_phase[
+    layout: Layout
+](out: LayoutTensor[mut=False, dtype, layout], size: Int):
     global_i = block_dim.x * block_idx.x + thread_idx.x
     for i in range(1, block_idx.x+1):
         if global_i < i * block_dim.x: return
         prev_sum = out[i * block_dim.x - 1]
         out[global_i] += prev_sum 
+
 
 # ANCHOR_END: prefix_sum_complete
 
@@ -104,7 +108,9 @@ def main():
         a_tensor = LayoutTensor[mut=False, dtype, layout](a.unsafe_ptr())
 
         if use_simple:
-            out_tensor = LayoutTensor[mut=False, dtype, layout](out.unsafe_ptr())
+            out_tensor = LayoutTensor[mut=False, dtype, layout](
+                out.unsafe_ptr()
+            )
 
             ctx.enqueue_function[prefix_sum_simple[layout]](
                 out_tensor,
@@ -114,11 +120,15 @@ def main():
                 block_dim=THREADS_PER_BLOCK,
             )
         else:
-            var out_tensor = LayoutTensor[mut=False, dtype, extended_layout](out.unsafe_ptr())
+            var out_tensor = LayoutTensor[mut=False, dtype, extended_layout](
+                out.unsafe_ptr()
+            )
 
             # ANCHOR: prefix_sum_complete_block_level_sync
             # Phase 1: Local prefix sums
-            ctx.enqueue_function[prefix_sum_local_phase[extended_layout, extended_layout]](
+            ctx.enqueue_function[
+                prefix_sum_local_phase[extended_layout, extended_layout]
+            ](
                 out_tensor,
                 a_tensor,
                 size,
@@ -152,7 +162,10 @@ def main():
 
         with out.map_to_host() as out_host:
             if not use_simple:
-                print("Note: we print the extended buffer here, but we only need to print the first `size` elements")
+                print(
+                    "Note: we print the extended buffer here, but we only need"
+                    " to print the first `size` elements"
+                )
 
             print("out:", out_host)
             print("expected:", expected)

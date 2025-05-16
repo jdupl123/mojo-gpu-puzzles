@@ -43,6 +43,7 @@ fn conv_1d_simple[
 
 
 
+
 # ANCHOR_END: conv_1d_simple
 
 # ANCHOR: conv_1d_block_boundary
@@ -79,6 +80,7 @@ fn conv_1d_block_boundary[
     for j in range(1,CONV_2):
         tmp += data[local_i+j] * kernel[j]
     out[global_i]=tmp
+
 
 # ANCHOR_END: conv_1d_block_boundary
 
