@@ -26,6 +26,13 @@ fn naive_matmul[
     row = block_dim.y * block_idx.y + thread_idx.y
     col = block_dim.x * block_idx.x + thread_idx.x
     # FILL ME IN (roughly 6 lines)
+    if row >= SIZE or col >= SIZE: return
+    var o: out.element_type = 0
+    @parameter
+    for i in range(SIZE):
+        o+=a[row,i]*b[i,col]
+    out[row,col] = o
+
 
 
 # ANCHOR_END: naive_matmul
@@ -44,6 +51,20 @@ fn single_block_matmul[
     local_row = thread_idx.y
     local_col = thread_idx.x
     # FILL ME IN (roughly 12 lines)
+    if row >= SIZE or col >= SIZE: return
+    a_s = tb[dtype]().row_major[SIZE, SIZE]().shared().alloc()
+    b_s = tb[dtype]().row_major[SIZE, SIZE]().shared().alloc()
+    @parameter
+    a_s[local_row,local_col] = a[row,col]
+    b_s[local_row,local_col] = b[row,col]
+    barrier()
+    if row >= SIZE or col >= SIZE: return
+    var o: out.element_type = 0
+    @parameter
+    for i in range(SIZE):
+        o+=a_s[row,i]*b_s[i,col]
+    out[row,col] = o
+    
 
 
 # ANCHOR_END: single_block_matmul
